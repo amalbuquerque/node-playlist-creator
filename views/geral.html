@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <script src="scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+        <script src="scripts/jquery.tools-1.2.7.min.js"></script>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <script type="text/JavaScript">
+
+var playlistPosition = 0;
+var spotsDirectory = undefined;
+var playlistFromDirectory = [];
+
+$(document).ready(function(){
+    $('#video').html('');
+    refreshPlaylist();
+});
+
+function refreshPlaylist() {
+    console.log('Start RefreshPlaylist');
+    $.getJSON( "ajax/get-playlist", function( data ) {
+        if(data && data.spotsdir && spotsDirectory === undefined) {
+            spotsDirectory = '/' + data.spotsdir;
+        }
+        if (data && data.outdoors && $.isArray(data.outdoors)) {
+
+            console.log('Recebemos ' + data.outdoors.length + ' Outdoors.');
+            // estava vazia a lista que recebemos, tentamos dentro de 30 segs novamente
+            if (data.outdoors.length === 0) {
+                setTimeout('refreshPlaylist()',30 * 1000);
+            } else {
+                // playlistFromDirectory = $.extend(true, [], data.outdoors);
+                playlistFromDirectory = data.outdoors;
+                startPlaylistFromDirectory();
+            }
+        }
+    }).fail(function() {
+        // se nao tinha uma playlist previamente, tenta o refresh em 30 segundos
+        // caso contrario, mostra a playlist que tinha carregada previamente
+        console.log('ERROR: RefreshPlaylist Failed!!!');
+        if (playlistFromDirectory.length === 0){
+            setTimeout('refreshPlaylist()',30 * 1000);
+        } else {
+            startPlaylistFromDirectory();
+        }
+    });
+        
+};
+
+function startPlaylistFromDirectory(){
+
+    console.log('Start StartPlaylistFromDirectory');
+    if (playlistFromDirectory.length === 0) {
+        // caso nao tenhamos playlist ainda nao podemos fazer nada
+        return;
+
+    } else {
+
+        var fileToPlay = playlistFromDirectory[playlistPosition].title;
+        fileToPlay = spotsDirectory + '/' + fileToPlay;
+        console.log('Playing ' + fileToPlay);
+        // flashembed("video", fileToPlay);
+
+        $('#video').flashembed({
+            src: fileToPlay, wmode: 'opaque'
+        });
+
+        setTimeout('startPlaylistFromDirectory()',
+            playlistFromDirectory[playlistPosition].duration * 1000);
+
+        // se playlistPosition nao for a ultima, incrementamos para a proxima
+        if((playlistFromDirectory.length - 1) != playlistPosition){
+            playlistPosition++;
+        } else {
+            // chegamos ao fim, fazemos refresh no fim deste spot
+            setTimeout('window.location.reload()',
+                    playlistFromDirectory[playlistPosition].duration * 1000);
+        }
+    }
+}
+
+    </script>
+<style type="text/css">
+    <!--
+
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+    -->
+</style>
+</head>
+    <body>
+        <div>
+                <div id="video" style="width: 394px; height: 292px"></div>
+        </div>
+    </body>
+</html>
