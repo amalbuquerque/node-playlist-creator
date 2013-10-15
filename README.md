@@ -15,6 +15,7 @@ TODO
 - Pôr uma imagem como background para que seja apresentada entre reloads
 - Pôr o tamanho (H x L) dos filmes apresentados configuravel no .config e passado para a View
 - Pôr o player com .mp4 em vez dos .swf apenas
+- Apresentar alguma info obtida na resposta do node.js
 - ~~Utilizar uma cena de logging decente~~ DONE
 
 KNOWN BUGS

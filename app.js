@@ -52,6 +52,7 @@ app.get('/ajax/get-playlist', function(req, res) {
 
     var reply = { 
         spotsdir : spotsFolder,
+        timestamp : undefined,
         outdoors : []
     };
     var outdoorIndex = 0;
@@ -87,8 +88,10 @@ app.get('/ajax/get-playlist', function(req, res) {
             // ]
         // };
     logger.info('Returning ' + reply.outdoors.length + ' outdoors!');
-    logger.info('Content: ' + reply);
+    logger.info('Content: ' + JSON.stringify(reply));
 
+    var now = new Date();
+    reply.timestamp = now.toString();
     res.json(reply);
 });
 
