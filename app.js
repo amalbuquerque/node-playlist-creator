@@ -62,7 +62,7 @@ app.get('/ajax/get-playlist', function(req, res) {
     };
     var outdoorIndex = 0;
     for (var i in files) {
-        logger.info('Checking file: ' + i + '; Name: ' + files[i]);
+        logger.debug('Checking file: ' + i + '; Name: ' + files[i]);
 
         var match = pattern.exec(files[i]);
         if (match) {
@@ -71,10 +71,10 @@ app.get('/ajax/get-playlist', function(req, res) {
             var end = start + text.length;
         
             // console.log('I = ' + i);
-            logger.info('Matched file:' + files[i] + '; start: ' 
+            logger.debug('Matched file:' + files[i] + '; start: ' 
                 + start + '; text:[' + text + ']; end: ' + end);
             var duration = text.slice(0, - (timeunit.length + suffix.length));
-            logger.info('With duration: ' + duration);
+            logger.debug('With duration: ' + duration);
             reply.outdoors[outdoorIndex] = {
                 title : files[i],
                 // mantemos a compatibilidade com o codigo herdado
@@ -83,7 +83,7 @@ app.get('/ajax/get-playlist', function(req, res) {
             outdoorIndex++;
         }
         else {
-            logger.info('Not a XXseg.swf');
+            logger.debug('Not a XXseg.swf');
         }
     }
     // reply = 
@@ -92,8 +92,9 @@ app.get('/ajax/get-playlist', function(req, res) {
                 // { title : "news.swf", duration : "61" }
             // ]
         // };
-    logger.info('Returning ' + reply.outdoors.length + ' outdoors!');
-    logger.info('Content: ' + JSON.stringify(reply));
+    var msg = 'Returning ' + reply.outdoors.length + ' outdoors!';
+    msg += 'Content: ' + JSON.stringify(reply);
+    logger.info(msg);
 
     var now = new Date();
     reply.timestamp = now.toString();

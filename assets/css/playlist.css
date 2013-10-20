@@ -1,0 +1,45 @@
+html, body {
+    margin-left: -1;
+    margin-top: 0;
+    padding: 0;
+    /* Se quisermos apenas o background uma vez
+    background-image:url('/assets/images/logo_fundobranco_thatsit_394x292.png');
+    background-repeat:no-repeat;
+    background-position:left top;
+    */
+}
+
+div.video {
+    background-image:url('/assets/images/logo_fundobranco_thatsit_394x292.png');
+    width: 394px;
+    height: 292px;
+    margin: 0;
+    float: left;
+}
+
+div.info_deprecated {
+    position: absolute;
+    left: 420px;
+    top: 20px;
+    width: 600px;
+    height: 600px;
+    
+}
+
+div.info {
+    /* position: relative; */
+    width: 600px;
+    height: auto;
+    float: right;
+}
+
+div.msg_header {
+    /* padding-top: 25px; */
+}
+
+div.msg {
+    /*
+    padding-left: 25px;
+    padding-right: 25px;
+    */
+}

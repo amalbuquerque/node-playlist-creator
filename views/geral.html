@@ -1,21 +1,21 @@
 <html>
     <head>
-        <style href="assets/playlist.css"></style>
-        <link rel="stylesheet" type="text/css" href="assets/playlist.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/playlist.css">
         <script type="text/javascript" src="scripts/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="scripts/jquery.tools-1.2.7.min.js"></script>
         <script type="text/javascript" src="scripts/prettyprint.js"></script>
+        <script type="text/javascript" src="scripts/utils.js"></script>
         <script type="text/javascript" src="scripts/playlist-creator.js"></script>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
     <body>
-        <div>
-                <div id="video" style="width: 394px; height: 292px"></div>
-                <div class="msg msg_header">
-                    <h3>Playlist received:</h3>
-                </div>
-                <div id="message" class="msg">
-                </div>
+        <div id="video" class="video"></div>
+        <div id="information" class="info">
+            <div id="msg_header" class="msg msg_header">
+                <h3>Playlist received:</h3>
+            </div>
+            <div id="message" class="msg">
+            </div>
         </div>
     </body>
 </html>

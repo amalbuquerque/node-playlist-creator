@@ -15,6 +15,7 @@ config.folders.logs = 'logs';
 config.log.maxfilesize = 10 * 1000 * 1000;
 config.log.logfile = 'debug.log';
 config.log.exceptionsfile = 'exceptions.log';
+config.log.level = 'info';
 
 config.playlist.pattern = /\d+seg\.swf$/;
 config.playlist.timeunit = 'seg';
