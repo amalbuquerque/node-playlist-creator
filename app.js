@@ -3,9 +3,11 @@ var config = require('./config');
 var logger = require('./log');
 
 var spotsPath = config.folders.spots;
-var spotsFolder = 'spots';
+var spotsRemoteFolder = 'spots';
 var scriptsPath = config.folders.scripts;
-var scriptsFolder = 'scripts';
+var scriptsRemoteFolder = 'scripts';
+var assetsPath = config.folders.assetsPath;
+var assetsRemoteFolder = 'assets';
 
 var express = require('express');
 var fs = require('fs');
@@ -15,8 +17,11 @@ var app = express();
 var engines = require('consolidate');
 
 // pasta onde serao servidos os spots
-app.use('/' + spotsFolder, express.static(__dirname + '/' + spotsPath));
-app.use('/' + scriptsFolder, express.static(__dirname + '/' + scriptsPath));
+app.use('/' + spotsRemoteFolder, express.static(__dirname + '/' + spotsPath));
+// pasta onde serao servidos os scripts
+app.use('/' + scriptsRemoteFolder, express.static(__dirname + '/' + scriptsPath));
+// pasta onde serao servidos os diferentes assets (css, images, etc)
+app.use('/' + assetsRemoteFolder, express.static(__dirname + '/' + assetsPath));
 
 app.set('views', __dirname + '/views');
 app.engine('html', engines.ejs);
@@ -51,7 +56,7 @@ app.get('/ajax/get-playlist', function(req, res) {
     var suffix = config.playlist.suffix;
 
     var reply = { 
-        spotsdir : spotsFolder,
+        spotsdir : spotsRemoteFolder,
         timestamp : undefined,
         outdoors : []
     };

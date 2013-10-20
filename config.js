@@ -7,6 +7,8 @@ config.log = {};
 
 config.folders.spots = 'spots/Ericeira';
 config.folders.scripts = 'scripts';
+// se fosse apenas config.folders.assets por alguma razao ficava undefined
+config.folders.assetsPath = 'assets';
 config.folders.logs = 'logs';
 
 // tamanho em bytes
