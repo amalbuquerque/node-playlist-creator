@@ -1,6 +1,6 @@
 {
-  "name": "thatsit-playlist-creator",
-  "description": "app thatsit que obtem a playlist de uma pasta",
+  "name": "playlist-creator",
+  "description": "app que obtem a playlist a partir do conteudo de uma pasta (com regex) e passa os videos obtidos",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
