@@ -4,6 +4,7 @@ config.folders = {};
 config.playlist = {};
 config.web = {};
 config.log = {};
+config.soshelper = {};
 
 config.folders.spots = 'spots/Ericeira';
 config.folders.scripts = 'scripts';
@@ -20,6 +21,11 @@ config.log.level = 'info';
 config.playlist.pattern = /\d+seg\.swf$/;
 config.playlist.timeunit = 'seg';
 config.playlist.suffix = '.swf';
+
+config.soshelper.templatePath = 'sos/template.html';
+// tem de ser a mesma pasta onde estao os spots
+config.soshelper.resultPath = config.folders.spots;
+config.soshelper.filename = 'sosresult.html';
 
 config.web.port = process.env.PORT || 3000;
 

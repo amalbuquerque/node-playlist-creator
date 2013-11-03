@@ -1,6 +1,21 @@
 // setup
 var config = require('./config');
 var logger = require('./log');
+var helper = require('./soshelper');
+
+var express = require('express');
+var fs = require('fs');
+var path = require('path');
+var engines = require('consolidate');
+
+// 2013-11-02, AA: Utilizado para escrever o 
+// sosresult.html apresentado em situacoes de
+// falha do node.js
+var soshelper = new helper ( 
+    config.soshelper.templatePath,
+    config.soshelper.resultPath,
+    config.soshelper.filename
+    );
 
 var spotsPath = config.folders.spots;
 var spotsRemoteFolder = 'spots';
@@ -9,12 +24,7 @@ var scriptsRemoteFolder = 'scripts';
 var assetsPath = config.folders.assetsPath;
 var assetsRemoteFolder = 'assets';
 
-var express = require('express');
-var fs = require('fs');
-
 var app = express();
-
-var engines = require('consolidate');
 
 // pasta onde serao servidos os spots
 app.use('/' + spotsRemoteFolder, express.static(__dirname + '/' + spotsPath));
@@ -92,8 +102,22 @@ app.get('/ajax/get-playlist', function(req, res) {
                 // { title : "news.swf", duration : "61" }
             // ]
         // };
+    // 2013-11-02, AA: para criar uma playlist de recurso
+    var sosResult = soshelper.createSOSWithPlaylist( reply.outdoors );
+    // var sosToRedirect = path.resolve(process.cwd(), sosResult);
+    var sosToRedirect = sosResult;
+    logger.info ('Wrote SOS to: ' + sosToRedirect);
+    // OK: file:///C:/codigo/thatsit/spots/Ericeira/sosresult.html
+    // returning: "C:\\codigo\\thatsit\\spots\\Ericeira\\sosresult.html" 
+    // 2013-11-03, AA: E impossivel fazer o redirect para um localfile
+    // portanto e irrelevante enviar o sosToRedirect
+    sosToRedirect = sosToRedirect.replace(/\\/g, '/');
+    sosToRedirect = 'file:///' + sosToRedirect;
+    reply.sos = sosToRedirect;
+
     var msg = 'Returning ' + reply.outdoors.length + ' outdoors!';
     msg += 'Content: ' + JSON.stringify(reply);
+
     logger.info(msg);
 
     var now = new Date();

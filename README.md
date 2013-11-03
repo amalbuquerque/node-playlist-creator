@@ -13,6 +13,7 @@ TODO
 ----
 - Em caso de detectar que o servidor (node.js) não devolve a playlist, reverter para
   um fallback e enviar mail
+- Antes de colocar o 
 - Pôr o tamanho (H x L) dos filmes apresentados configuravel no .config e passado para a View
 - Pôr o player com .mp4 em vez dos .swf apenas
 - Pôr a informacao devolvida ao lado do spot em vez de estar em baixo~~ DONE
