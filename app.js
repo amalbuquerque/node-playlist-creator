@@ -3,6 +3,7 @@ var config = require('./config');
 var logger = require('./log');
 var helper = require('./soshelper');
 
+var util = require('util');
 var express = require('express');
 var fs = require('fs');
 var path = require('path');
@@ -53,6 +54,25 @@ app.get('/', function(req, res) {
 
 app.get('/geral', function(req, res) {
     res.render('geral.html');
+});
+
+app.get('/ajax/get-info', function(req, res) {
+    logger.info('Received params: ' + JSON.stringify(req.params));
+    logger.info('Received query: ' + JSON.stringify(req.query));
+
+    reply = 
+        { outdoors : [
+                { title : "abc.swf", duration : "15" },
+                { title : "news.swf", duration : "61" }
+            ]
+        };
+
+    var now = new Date();
+    reply.timestamp = now.toString();
+    // res.json(reply);
+    var toreturn = util.format( "%s ( %j )", 
+        req.query.callback, JSON.stringify(reply));
+    res.send ( toreturn );
 });
 
 app.get('/ajax/get-playlist', function(req, res) {
