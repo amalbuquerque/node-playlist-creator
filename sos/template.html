@@ -23,6 +23,7 @@
                     return;
                 }
                 $('#video').html('');
+                /* 2013-11-05, AA: Comentei tudo o que nao tinha a ver com spots
                 if(files[count].type == 'news'){
                     if(!$.browser.msie){
                         $('#jpg_text').contents().find('html').html('<frameset cols="100%"><frame style="overflow: hidden" src="'+files[count].link+'" /></frameset>');
@@ -30,12 +31,13 @@
                         $('#jpg_text').contents().find('html').html('<p>This content is not available in IE</p>');
                     }
                 } else {
+                */
                     // 2013-11-02, AA: alterei a parte de obter o text 
                     // porque ja nao temos text
                     // $('#jpg_text').contents().find('html').html($("<div/>").html(files[count].text).text());
-                    $('#jpg_text').contents().find('html').html($("<div/>").html("").text());
-                    $('#video').flashembed({src: files[count].title, wmode: 'opaque'})
-                }
+                    // $('#jpg_text').contents().find('html').html($("<div/>").html("").text());
+                $('#video').flashembed({src: files[count].title, wmode: 'opaque'})
+                // }
 
                 setTimeout('loadFile()',files[count].duration * 1000);
                 
@@ -47,17 +49,29 @@
             
         </script>
         <style type="text/css">
-            <!--
-
             html, body {
-                margin: 0;
+                margin-left: -1;
+                margin-top: 0;
                 padding: 0;
+                /* Se quisermos apenas o background uma vez
+                background-image:url('/assets/images/logo_fundobranco_thatsit_394x292.png');
+                background-repeat:no-repeat;
+                background-position:left top;
+                */
             }
-            -->
+
+            div.video {
+                width: 394px;
+                height: 292px;
+                margin: 0;
+                float: left;
+            }
         </style>
     </head><body>
     <div>
+        <!--
         <iframe id="jpg_text" class="left-align" style="position:absolute; margin: 0; min-width: 394px; min-height: 292px; overflow: hidden"></iframe>
-        <div id="video" style="width: 394px; height: 292px"></div>
+        -->
+        <div id="video" class="video"></div>
     </div>
 </body></html>

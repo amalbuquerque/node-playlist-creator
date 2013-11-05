@@ -27,6 +27,8 @@ var assetsRemoteFolder = 'assets';
 
 var app = express();
 
+var G_LASTREPLY = undefined;
+
 // pasta onde serao servidos os spots
 app.use('/' + spotsRemoteFolder, express.static(__dirname + '/' + spotsPath));
 // pasta onde serao servidos os scripts
@@ -60,18 +62,19 @@ app.get('/ajax/get-info', function(req, res) {
     logger.info('Received params: ' + JSON.stringify(req.params));
     logger.info('Received query: ' + JSON.stringify(req.query));
 
-    reply = 
-        { outdoors : [
-                { title : "abc.swf", duration : "15" },
-                { title : "news.swf", duration : "61" }
-            ]
-        };
+    var reply = {}; 
+
+    if ( G_LASTREPLY ) {
+        reply = G_LASTREPLY;
+    } else {
+        reply.message = "ONLINE, didn't create any playlist yet.";
+    }
 
     var now = new Date();
-    reply.timestamp = now.toString();
-    // res.json(reply);
-    var toreturn = util.format( "%s ( %j )", 
-        req.query.callback, JSON.stringify(reply));
+    reply.info_timestamp = now.toString();
+
+    var toreturn = util.format( "%s ( %j )",
+    req.query.callback, JSON.stringify(reply));
     res.send ( toreturn );
 });
 
@@ -124,8 +127,7 @@ app.get('/ajax/get-playlist', function(req, res) {
         // };
     // 2013-11-02, AA: para criar uma playlist de recurso
     var sosResult = soshelper.createSOSWithPlaylist( reply.outdoors );
-    // var sosToRedirect = path.resolve(process.cwd(), sosResult);
-    var sosToRedirect = sosResult;
+    var sosToRedirect = path.resolve(process.cwd(), sosResult);
     logger.info ('Wrote SOS to: ' + sosToRedirect);
     // OK: file:///C:/codigo/thatsit/spots/Ericeira/sosresult.html
     // returning: "C:\\codigo\\thatsit\\spots\\Ericeira\\sosresult.html" 
@@ -142,6 +144,11 @@ app.get('/ajax/get-playlist', function(req, res) {
 
     var now = new Date();
     reply.timestamp = now.toString();
+
+    // 2013-11-05, AA: Para podermos devolver no get-info a ultima
+    // resposta devolvida pelo playlist-creator
+    G_LASTREPLY = reply;
+
     res.json(reply);
 });
 

@@ -6,7 +6,7 @@ config.web = {};
 config.log = {};
 config.soshelper = {};
 
-config.folders.spots = 'spots/Ericeira';
+config.folders.spots = 'spots';
 config.folders.scripts = 'scripts';
 // se fosse apenas config.folders.assets por alguma razao ficava undefined
 config.folders.assetsPath = 'assets';

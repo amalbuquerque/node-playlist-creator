@@ -38,10 +38,18 @@ function updateInformationTitle(){
             maxPlaylistTimesPlayed ));
 }
 
+function updateSosURL( sosURL ) {
+    if ( sosURL ) {
+        $('#sos_header > h3 > a').attr("href", sosURL);
+        $('#sos_header > h3 > a').text(sosURL);
+    }
+}
+
 function updateInformation( data ){
     var prettyData = prettyPrint(data);
     $('#message').html(prettyData);
     updateInformationTitle();
+    updateSosURL(data.sos);
 }
 
 // 2013-11-02, AA: failedBefore indica que
@@ -116,11 +124,15 @@ function startPlaylistFromDirectory(){
         log('Playing ' + fileToPlay);
         // flashembed("video", fileToPlay);
 
-        // TODO:
-        // Fazer um ajax GET antes, para ver
+        // Fa um ajax GET antes, para ver
         // que o servidor consegue devolver o ficheiro
-        // Se nao devolver, setTimeout com refresh da playlist daqui a 30 segundos
-        // e return
+        var fileExists = checkIfExists( fileToPlay );
+        if (fileExists === false) {
+            // Se nao devolver, setTimeout com refresh da playlist daqui a 30 segundos
+            // e return
+            setTimeout('refreshPlaylist( true );', 30 * 1000);
+            return;
+        }
 
         $('#video').flashembed({
             src: fileToPlay, wmode: 'opaque'

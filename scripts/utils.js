@@ -44,3 +44,52 @@ function log( msg ){
         console.log(getDateTimeString() + ': ' + msg);
     }
 }
+
+// so podemos fazer assim (devolver uma variavel
+// preenchida no corpo do .done ou .fail
+// porque defini na chamada .ajax que a chamada
+// e sincrona (async: false)
+function checkIfExists ( url ) {
+    var toReturn = undefined;
+
+    // only checks in the same domain (AJAX)
+    $.ajax({ url:url,
+        async: false,
+        type:'HEAD'})
+    .done(function() { 
+        // exists code
+        toReturn = true;
+        log('EXISTS: ' + url);
+    }).fail(function() { 
+        // not exists code
+        toReturn = false;
+        log('Not exists: ' + url);
+    });
+
+    // HTTP GET portanto nao
+    // se verifica a same domain policy
+    /*
+    $.get(url)
+    .done(function() { 
+        // exists code
+        toReturn = true;
+        log('EXISTS: ' + url);
+    }).fail(function() { 
+        // not exists code
+        toReturn = false;
+        log('Not exists: ' + url);
+    });
+    */
+
+    return toReturn;
+
+    /* 
+    $.getJSON( url, function( data ) {
+            if (data) {
+                log('OK!');
+            }
+        }).fail(function() {
+            log('ERROR: get Failed!!!');
+        });
+    */
+}
