@@ -155,6 +155,12 @@ app.get('/ajax/get-playlist', function(req, res) {
     res.json(reply);
 });
 
+app.on('error', function (err) {
+  console.error(err);
+  console.error(err.message);
+  console.error(err.stack);
+});
+
 app.listen(config.web.port);
 logger.info('Listening on port ' + config.web.port);
 logger.info('Running on: ' + process.cwd());
