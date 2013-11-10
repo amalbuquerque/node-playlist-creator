@@ -1,7 +1,9 @@
+// thatsit-playlist: app.js
 // setup
 var config = require('./config');
 var logger = require('./log');
 var helper = require('./soshelper');
+var myutils = require('./utils');
 
 var util = require('util');
 var express = require('express');
@@ -70,11 +72,13 @@ app.get('/ajax/get-info', function(req, res) {
         reply.message = "ONLINE, didn't create any playlist yet.";
     }
 
-    var now = new Date();
-    reply.info_timestamp = now.toString();
+    // var now = new Date();
+    // reply.timestamp = now.toString();
+    reply.info_timestamp = myutils.getTimestamp();
 
-    var toreturn = util.format( "%s ( %j )",
-    req.query.callback, JSON.stringify(reply));
+    var toreturn = util.format( "%s ( %j )", 
+        req.query.callback, JSON.stringify(reply));
+
     res.send ( toreturn );
 });
 
@@ -142,8 +146,7 @@ app.get('/ajax/get-playlist', function(req, res) {
 
     logger.info(msg);
 
-    var now = new Date();
-    reply.timestamp = now.toString();
+    reply.playlist_generated = myutils.getTimestamp();
 
     // 2013-11-05, AA: Para podermos devolver no get-info a ultima
     // resposta devolvida pelo playlist-creator
