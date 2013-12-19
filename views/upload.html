@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <!-- link rel="stylesheet" type="text/css" href="assets/css/upload.css" -->
+        <script type="text/javascript" src="scripts/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="scripts/jquery.tools-1.2.7.min.js"></script>
+        <script type="text/javascript" src="scripts/jquery.form.min.js"></script>
+        <script type="text/javascript" src="scripts/prettyprint.js"></script>
+        <script type="text/javascript" src="scripts/utils.js"></script>
+        <script type="text/javascript" src="scripts/upload.js"></script>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Upload Spots</title>
+</head>
+    <body>
+
+    <form id="uploadForm"
+          enctype="multipart/form-data"
+          action="/ajax/upload-spot"
+          method="post">
+      <input type="file" id="spotInput" name="userSpot" />
+      <input type="text" id="durationInput" name="durationSpot" />
+      <input type="submit" value="Submit">
+    </form>
+
+    <span id="status" />
+
+    </body>
+</html>
+

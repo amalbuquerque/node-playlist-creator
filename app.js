@@ -28,6 +28,8 @@ var assetsPath = config.folders.assetsPath;
 var assetsRemoteFolder = 'assets';
 
 var app = express();
+// 2013-12-18, AA: Para permitir os uploads
+app.use(express.bodyParser());
 
 var G_LASTREPLY = undefined;
 
@@ -60,6 +62,43 @@ app.get('/geral', function(req, res) {
     res.render('geral.html');
 });
 
+// 2013-12-18, AA: Upload para permitir o save
+// dos spots directamente
+app.get('/upload-spot', function(req, res) {
+    res.render('upload.html');
+});
+
+app.post('/ajax/upload-spot', function(req, res) {
+    // logger.info(JSON.stringify(req.files, undefined, 2));
+    logger.info('Received spot: ' + req.files.userSpot.name);
+
+    var newSpotName = myutils.getSpotName('./' + spotsPath, req.files.userSpot.name, req.body.durationSpot);
+    logger.info('New spot name: ' + newSpotName);
+
+    var serverPathToMove = './' + spotsPath + '/' + newSpotName;
+
+    var remotePath = '/' + spotsRemoteFolder + '/' + req.files.userSpot.name;
+ 
+    logger.info('Moving ' + req.files.userSpot.path + ' to ' + serverPathToMove);
+
+    fs.rename(
+        req.files.userSpot.path,
+        serverPathToMove,
+        function(error) {
+            if(error) {
+                res.send({
+                    error: 'Ah crap! Something bad happened'
+                });
+                return;
+            }
+     
+            res.send({
+                path: remotePath,
+                filesystemPath: serverPathToMove
+            });
+    });
+});
+
 app.get('/ajax/get-info', function(req, res) {
     logger.info('Received params: ' + JSON.stringify(req.params));
     logger.info('Received query: ' + JSON.stringify(req.query));
@@ -83,7 +122,7 @@ app.get('/ajax/get-info', function(req, res) {
 });
 
 app.get('/ajax/get-playlist', function(req, res) {
-    logger.info('GET get-playlist');
+    logger.info('GET /ajax/get-playlist');
 
     var files = fs.readdirSync('./' + spotsPath);
 
