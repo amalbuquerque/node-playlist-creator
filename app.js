@@ -6,7 +6,9 @@ var helper = require('./soshelper');
 var myutils = require('./utils');
 
 var util = require('util');
+var binary = require('binary');
 var express = require('express');
+var restler = require("restler");
 var fs = require('fs');
 var path = require('path');
 var engines = require('consolidate');
@@ -29,7 +31,7 @@ var assetsRemoteFolder = 'assets';
 
 var app = express();
 // 2013-12-18, AA: Para permitir os uploads
-app.use(express.bodyParser());
+// app.use(express.bodyParser());
 
 var G_LASTREPLY = undefined;
 
@@ -62,14 +64,117 @@ app.get('/geral', function(req, res) {
     res.render('geral.html');
 });
 
+// 2013-12-23, AA: OK a bombar
+// falta passar o caminho do ficheiro 
+// e a duration do spot, devera ser utilizado
+// do lado do thatsit-manager
+app.get('/xptu', function(req, res) {
+    var filename = "zzzzzCasadasCasas.swf";
+    var input_path = "C:\\" + filename;
+
+    fs.stat(input_path, function(err, stats) {
+        restler.post("http://localhost:3000/ajax/upload-spot", {
+            multipart: true,
+            data: {
+                "userSpot": restler.file(input_path, filename, stats.size, null, "application/x-shockwave-flash"),
+                "durationSpot": 14
+            }
+        }).on("complete", function(data) {
+            logger.info("Complete!:", data);
+        });
+    });
+
+    res.send("OK");
+});
+
+// 2013-12-23, AA: faz o PUT do file no /xpti com sucesso
+// tive de criar o content-length header a mao
+app.get('/xpto', function(req, res) {
+    var request = require("request");
+
+    var input_path = './' + spotsPath + "/Fuel10seg.swf";
+    fs.stat(input_path, function(err, stats) {
+        fs.createReadStream(input_path)
+        .pipe(request.put("http://localhost:3000/xpti",
+            {
+              headers : { 'content-length': stats.size }
+            },
+            function (error, response, body) {
+                logger.info("Replied:", body);
+            }
+        ));
+    });
+
+    res.send("respond with something");
+});
+
+app.put('/xpti', function(request, response){
+    var file = fs.createWriteStream('./' + spotsPath + "/received.txt");
+    logger.info("HEADERS: ", request.headers);
+    var fileSize = request.headers['content-length'];
+    var uploadedSize = 0;
+
+    request.on('data', function (chunk) {
+        // logger.info("chunkSize: ", chunk.length, "filesize: ", fileSize);
+        uploadedSize += chunk.length;
+        uploadProgress = (uploadedSize/fileSize) * 100;
+        response.write(Math.round(uploadProgress) + "%" + " uploaded\n" );
+        /* request.pipe(file) trata disto!
+        var bufferStore = file.write(chunk);
+        if(bufferStore == false)
+            request.pause();
+        */
+    });
+
+    /* request.pipe(file) trata disto!
+    file.on('drain', function() {
+        request.resume();
+    })
+    */
+
+    // The notion is quite similar to UNIX pipes.
+    // Pipes the input into an output stream.
+    request.pipe(file);
+
+    request.on('end', function() {
+        response.write('Upload done!');
+        response.end();
+    })
+});
+
+app.post('/api/upload-spot', express.bodyParser(), function(req, res){
+
+    // logger.info("REQ.BODY:", util.inspect(req.body));
+    logger.info("REQ.BODY:", req.body);
+
+    var body = req.body.name;
+    // 2013-12-22, AA: Nao pode ser assim, pq o default e utf-8
+    // var buf = new Buffer(body, 'binary');
+    var buf = new Buffer(body.toString('binary'), 'binary');
+
+    console.log('req.body.name len:', body.length);
+    console.log('buffer len:', buf.length);
+
+    var g = binary.parse(buf)
+        .word16bu('a') // unsigned 16-bit big-endian value
+        .word16bu('b').vars;
+
+    console.log('g.a', g.a);
+    console.log('g.b', g.b);
+
+    res.send("respond with a resource");
+});
+
 // 2013-12-18, AA: Upload para permitir o save
 // dos spots directamente
 app.get('/upload-spot', function(req, res) {
     res.render('upload.html');
 });
 
-app.post('/ajax/upload-spot', function(req, res) {
-    // logger.info(JSON.stringify(req.files, undefined, 2));
+// 2013-12-22, AA: podemos colocar o Parser (ou mais do que um)
+// que devera ser utilizado no tratamento do request
+app.post('/ajax/upload-spot', express.bodyParser(), function(req, res) {
+    logger.info(myutils.JSONstringify(req.files));
     logger.info('Received spot: ' + req.files.userSpot.name);
 
     var newSpotName = myutils.getSpotName('./' + spotsPath, req.files.userSpot.name, req.body.durationSpot);
@@ -100,8 +205,8 @@ app.post('/ajax/upload-spot', function(req, res) {
 });
 
 app.get('/ajax/get-info', function(req, res) {
-    logger.info('Received params: ' + JSON.stringify(req.params));
-    logger.info('Received query: ' + JSON.stringify(req.query));
+    logger.info('Received params: ' + myutils.JSONstringify(req.params));
+    logger.info('Received query: ' + myutils.JSONstringify(req.query));
 
     var reply = {}; 
 
@@ -116,7 +221,7 @@ app.get('/ajax/get-info', function(req, res) {
     reply.info_timestamp = myutils.getTimestamp();
 
     var toreturn = util.format( "%s ( %j )", 
-        req.query.callback, JSON.stringify(reply));
+        req.query.callback, myutils.JSONstringify(reply));
 
     res.send ( toreturn );
 });
@@ -181,7 +286,7 @@ app.get('/ajax/get-playlist', function(req, res) {
     reply.sos = sosToRedirect;
 
     var msg = 'Returning ' + reply.outdoors.length + ' outdoors!';
-    msg += 'Content: ' + JSON.stringify(reply);
+    msg += 'Content: ' + myutils.JSONstringify(reply);
 
     logger.info(msg);
 

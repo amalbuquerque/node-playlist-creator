@@ -6,6 +6,11 @@ Utils.prototype.getTimestamp = function () {
     return now.toString();
 };
 
+Utils.prototype.JSONstringify = function (obj) {
+    // devolve o json indentado
+    return JSON.stringify(obj, undefined, 2);
+};
+
 Utils.prototype.getSpotName = function (path, filename, duration) {
 
     var fs = require('fs');
