@@ -8,7 +8,7 @@ var myutils = require('./utils');
 var util = require('util');
 var binary = require('binary');
 var express = require('express');
-var restler = require("restler");
+var restler = require('restler');
 var fs = require('fs');
 var path = require('path');
 var engines = require('consolidate');
@@ -62,29 +62,6 @@ app.get('/', function(req, res) {
 
 app.get('/geral', function(req, res) {
     res.render('geral.html');
-});
-
-// 2013-12-23, AA: OK a bombar
-// falta passar o caminho do ficheiro 
-// e a duration do spot, devera ser utilizado
-// do lado do thatsit-manager
-app.get('/xptu', function(req, res) {
-    var filename = "zzzzzCasadasCasas.swf";
-    var input_path = "C:\\" + filename;
-
-    fs.stat(input_path, function(err, stats) {
-        restler.post("http://localhost:3000/ajax/upload-spot", {
-            multipart: true,
-            data: {
-                "userSpot": restler.file(input_path, filename, stats.size, null, "application/x-shockwave-flash"),
-                "durationSpot": 14
-            }
-        }).on("complete", function(data) {
-            logger.info("Complete!:", data);
-        });
-    });
-
-    res.send("OK");
 });
 
 // 2013-12-23, AA: faz o PUT do file no /xpti com sucesso
@@ -177,7 +154,11 @@ app.post('/ajax/upload-spot', express.bodyParser(), function(req, res) {
     logger.info(myutils.JSONstringify(req.files));
     logger.info('Received spot: ' + req.files.userSpot.name);
 
-    var newSpotName = myutils.getSpotName('./' + spotsPath, req.files.userSpot.name, req.body.durationSpot);
+    var newSpotName = myutils.getSpotName('./' + spotsPath,
+        req.files.userSpot.name,
+        req.body.durationSpot,
+        config.playlist.suffix_pattern);
+
     logger.info('New spot name: ' + newSpotName);
 
     var serverPathToMove = './' + spotsPath + '/' + newSpotName;

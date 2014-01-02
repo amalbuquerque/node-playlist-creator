@@ -19,6 +19,7 @@ config.log.exceptionsfile = 'exceptions.log';
 config.log.level = 'info';
 
 config.playlist.pattern = /\d+seg\.swf$/;
+config.playlist.suffix_pattern = /\.swf$/;
 config.playlist.timeunit = 'seg';
 config.playlist.suffix = '.swf';
 

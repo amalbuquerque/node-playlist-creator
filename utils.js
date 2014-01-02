@@ -11,24 +11,27 @@ Utils.prototype.JSONstringify = function (obj) {
     return JSON.stringify(obj, undefined, 2);
 };
 
-Utils.prototype.getSpotName = function (path, filename, duration) {
+
+// var pattern = /\\.swf$/;
+Utils.prototype.getSpotName = function (path, filename, duration, pattern) {
 
     var fs = require('fs');
     var files = fs.readdirSync(path);
 
-    filename = filename.replace(".swf", "");
-    
-    if (files.length == 0) {
-        return filename + duration + "seg.swf";
+    var cont = 0;
+    for (var i in files) {
+        var match = pattern.exec(files[i]);
+        if (match) {
+            cont++;
+        }
     }
+    var file_index = cont + 1;
 
-    files = files.sort();
+    filename = filename.replace(".swf", "");
 
-    var lastSpot = files[files.length - 1];
-    // TODO: Sacar o novo nome
-    // do spot para ficar no fim da playlist
+    return file_index + "_" + filename + "_" + duration + "seg.swf";
 
-    return filename + duration + "seg.swf";
+    // files = files.sort();
 };
 
 module.exports = new Utils();
