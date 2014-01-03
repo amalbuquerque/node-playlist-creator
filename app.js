@@ -8,7 +8,6 @@ var myutils = require('./utils');
 var util = require('util');
 var binary = require('binary');
 var express = require('express');
-var restler = require('restler');
 var fs = require('fs');
 var path = require('path');
 var engines = require('consolidate');

@@ -1,6 +1,6 @@
 <html>
     <head>
-        <!-- link rel="stylesheet" type="text/css" href="assets/css/upload.css" -->
+        <link rel="stylesheet" type="text/css" href="assets/css/upload.css"/>
         <script type="text/javascript" src="scripts/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="scripts/jquery.tools-1.2.7.min.js"></script>
         <script type="text/javascript" src="scripts/jquery.form.min.js"></script>
@@ -12,16 +12,23 @@
 </head>
     <body>
 
-    <form id="uploadForm"
-          enctype="multipart/form-data"
-          action="/ajax/upload-spot"
-          method="post">
-      <input type="file" id="spotInput" name="userSpot" />
-      <input type="text" id="durationInput" name="durationSpot" />
-      <input type="submit" value="Submit">
-    </form>
+    <div class="control-group">
+        <form id="uploadForm"
+              enctype="multipart/form-data"
+              action="/ajax/upload-spot"
+              method="post">
+        <div class="control">
+            <input type="file" id="spotInput" name="userSpot" />
+        </div>
+        <div class="control">
+            Duração:
+            <input type="text" id="durationInput" name="durationSpot" />
+        </div>
+        <input type="submit" value="Submit">
+        </form>
+        <span id="status" />
+    </div>
 
-    <span id="status" />
 
     </body>
 </html>
