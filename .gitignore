@@ -9,6 +9,7 @@ lib-cov
 *.zip
 *.swf
 *.mp4
+*.exe
 
 pids
 logs

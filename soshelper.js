@@ -9,6 +9,13 @@ function SosHelper ( pathToSOSTemplate , resultPath , fileResult ) {
     this.resultPath = resultPath;
     this.fileResult = fileResult;
 
+    this.writeJqueryAsset = function(asset) {
+        var assetContent = fs.readFileSync('./scripts/' + asset, 'utf8');
+        var pathToWriteAsset = this.resultPath + '/' + asset;
+        fs.writeFileSync(pathToWriteAsset, assetContent);
+        logger.info('AssetPath > ' + pathToWriteAsset);
+    };
+
     this.createSOSWithPlaylist = function ( playlist ) {
         logger.info ('createSOS start');
         var templateContent = "";
@@ -36,16 +43,8 @@ function SosHelper ( pathToSOSTemplate , resultPath , fileResult ) {
             fs.writeFileSync(pathToWrite, templateContent);
             logger.info('TemplateContent > ' + pathToWrite);
 
-            /* 2013-11-02, AA: Era assync nao vale a pena
-            fs.writeFile(pathToWrite, templateContent, function (err) {
-                if (err) {
-                    return logger.error(err);
-                    // return console.log(err);
-                }
-                logger.info('TemplateContent > ' + pathToWrite);
-                // console.log('TemplateContent > ' + pathToWrite);
-            });
-            */
+            this.writeJqueryAsset('jquery-1.10.2.min.js');
+            this.writeJqueryAsset('jquery.tools-1.2.7.min.js');
 
             // 4. devolve resultPath/sosresult.html
             return pathToWrite;

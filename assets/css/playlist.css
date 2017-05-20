@@ -10,7 +10,7 @@ html, body {
 }
 
 div.video {
-    background-image:url('/assets/images/logo_fundobranco_thatsit_394x292.png');
+    /* background-image:url('/assets/images/logo_fundobranco_thatsit_394x292.png'); */
     width: 394px;
     height: 292px;
     margin: 0;

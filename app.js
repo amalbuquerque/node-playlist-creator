@@ -12,17 +12,18 @@ var fs = require('fs');
 var path = require('path');
 var engines = require('consolidate');
 
-// 2013-11-02, AA: Utilizado para escrever o 
+// 2013-11-02, AA: Utilizado para escrever o
 // sosresult.html apresentado em situacoes de
 // falha do node.js
-var soshelper = new helper ( 
-    config.soshelper.templatePath,
+var soshelper = new helper (
+    config.soshelper.flashTemplatePath,
     config.soshelper.resultPath,
     config.soshelper.filename
     );
 
-var spotsPath = config.folders.spots;
-var spotsRemoteFolder = 'spots';
+var spotsPath         = config.folders.flash.spots;
+var flashSpotsRemoteFolder = 'spots';
+
 var scriptsPath = config.folders.scripts;
 var scriptsRemoteFolder = 'scripts';
 var assetsPath = config.folders.assetsPath;
@@ -35,7 +36,7 @@ var app = express();
 var G_LASTREPLY = undefined;
 
 // pasta onde serao servidos os spots
-app.use('/' + spotsRemoteFolder, express.static(__dirname + '/' + spotsPath));
+app.use('/' + flashSpotsRemoteFolder, express.static(__dirname + '/' + spotsPath));
 // pasta onde serao servidos os scripts
 app.use('/' + scriptsRemoteFolder, express.static(__dirname + '/' + scriptsPath));
 // pasta onde serao servidos os diferentes assets (css, images, etc)
@@ -156,14 +157,14 @@ app.post('/ajax/upload-spot', express.bodyParser(), function(req, res) {
     var newSpotName = myutils.getSpotName('./' + spotsPath,
         req.files.userSpot.name,
         req.body.durationSpot,
-        config.playlist.suffix_pattern);
+        config.playlist.flash.suffix_pattern);
 
     logger.info('New spot name: ' + newSpotName);
 
     var serverPathToMove = './' + spotsPath + '/' + newSpotName;
 
-    var remotePath = '/' + spotsRemoteFolder + '/' + req.files.userSpot.name;
- 
+    var remotePath = '/' + flashSpotsRemoteFolder + '/' + req.files.userSpot.name;
+
     logger.info('Moving ' + req.files.userSpot.path + ' to ' + serverPathToMove);
 
     fs.rename(
@@ -176,7 +177,7 @@ app.post('/ajax/upload-spot', express.bodyParser(), function(req, res) {
                 });
                 return;
             }
-     
+
             res.send({
                 path: remotePath,
                 filesystemPath: serverPathToMove
@@ -188,7 +189,7 @@ app.get('/ajax/get-info', function(req, res) {
     logger.info('Received params: ' + myutils.JSONstringify(req.params));
     logger.info('Received query: ' + myutils.JSONstringify(req.query));
 
-    var reply = {}; 
+    var reply = {};
 
     if ( G_LASTREPLY ) {
         reply = G_LASTREPLY;
@@ -200,7 +201,7 @@ app.get('/ajax/get-info', function(req, res) {
     // reply.timestamp = now.toString();
     reply.info_timestamp = myutils.getTimestamp();
 
-    var toreturn = util.format( "%s ( %j )", 
+    var toreturn = util.format( "%s ( %j )",
         req.query.callback, myutils.JSONstringify(reply));
 
     res.send ( toreturn );
@@ -212,12 +213,12 @@ app.get('/ajax/get-playlist', function(req, res) {
     var files = fs.readdirSync('./' + spotsPath);
 
     // var pattern = /\d+seg\.swf$/;
-    var pattern = config.playlist.pattern;
     var timeunit = config.playlist.timeunit;
-    var suffix = config.playlist.suffix;
+    var pattern = config.playlist.flash.pattern;
+    var suffix = config.playlist.flash.suffix;
 
-    var reply = { 
-        spotsdir : spotsRemoteFolder,
+    var reply = {
+        spotsdir : flashSpotsRemoteFolder,
         timestamp : undefined,
         outdoors : []
     };
@@ -230,17 +231,21 @@ app.get('/ajax/get-playlist', function(req, res) {
             var start = match.index;
             var text = match[0];
             var end = start + text.length;
-        
+
             // console.log('I = ' + i);
             logger.debug('Matched file:' + files[i] + '; start: ' 
                 + start + '; text:[' + text + ']; end: ' + end);
+
             var duration = text.slice(0, - (timeunit.length + suffix.length));
+
             logger.debug('With duration: ' + duration);
             reply.outdoors[outdoorIndex] = {
                 title : files[i],
                 // mantemos a compatibilidade com o codigo herdado
                 type : "video",
-                duration : duration };
+                duration : duration
+            };
+
             outdoorIndex++;
         }
         else {
@@ -253,12 +258,13 @@ app.get('/ajax/get-playlist', function(req, res) {
                 // { title : "news.swf", duration : "61" }
             // ]
         // };
+
     // 2013-11-02, AA: para criar uma playlist de recurso
     var sosResult = soshelper.createSOSWithPlaylist( reply.outdoors );
     var sosToRedirect = path.resolve(process.cwd(), sosResult);
     logger.info ('Wrote SOS to: ' + sosToRedirect);
     // OK: file:///C:/codigo/thatsit/spots/Ericeira/sosresult.html
-    // returning: "C:\\codigo\\thatsit\\spots\\Ericeira\\sosresult.html" 
+    // returning: "C:\\codigo\\thatsit\\spots\\Ericeira\\sosresult.html"
     // 2013-11-03, AA: E impossivel fazer o redirect para um localfile
     // portanto e irrelevante enviar o sosToRedirect
     sosToRedirect = sosToRedirect.replace(/\\/g, '/');
