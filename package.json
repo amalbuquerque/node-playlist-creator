@@ -15,6 +15,9 @@
     "binary": "0.3.0",
     "request": "2.30.0",
     "restler": "3.1.0",
-    "mv": "2.1.1"
+    "mv": "2.1.1",
+    "video.js": "5.19.2",
+    "videojs-playlist": "4.0.0",
+    "serve-static": "1.12.3"
   }
 }

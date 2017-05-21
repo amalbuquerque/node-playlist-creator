@@ -8,6 +8,7 @@ var myutils = require('./utils');
 var util = require('util');
 var binary = require('binary');
 var express = require('express');
+var serveStatic = require('serve-static');
 var fs = require('fs');
 var path = require('path');
 var engines = require('consolidate');
@@ -39,9 +40,15 @@ var app = express();
 var G_LASTREPLY = undefined;
 
 // pasta onde serao servidos os spots
-app.use('/' + flashSpotsRemoteFolder, express.static(__dirname + '/' + flashSpotsPath));
+app.use('/' + flashSpotsRemoteFolder, serveStatic(__dirname + '/' + flashSpotsPath));
 
-app.use('/' + mp4SpotsRemoteFolder, express.static(__dirname + '/' + mp4SpotsPath));
+var mp4RemotePath = '/' + mp4SpotsRemoteFolder;
+var mp4LocalPath = __dirname + '/' + mp4SpotsPath;
+logger.info("Serving mp4 on:", mp4RemotePath);
+logger.info("Local path for mp4 on:", mp4LocalPath);
+app.use(mp4RemotePath, serveStatic(mp4LocalPath));
+// app.use('/' + mp4SpotsRemoteFolder, express.static(__dirname + '/' + mp4SpotsPath));
+
 // pasta onde serao servidos os scripts
 app.use('/' + scriptsRemoteFolder, express.static(__dirname + '/' + scriptsPath));
 // pasta onde serao servidos os diferentes assets (css, images, etc)
@@ -67,6 +74,10 @@ app.get('/', function(req, res) {
 
 app.get('/geral', function(req, res) {
     res.render('geral.html');
+});
+
+app.get('/geral_mp4', function(req, res) {
+    res.render('geral_mp4.html');
 });
 
 // 2013-12-23, AA: faz o PUT do file no /xpti com sucesso
