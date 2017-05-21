@@ -21,8 +21,11 @@ var soshelper = new helper (
     config.soshelper.filename
     );
 
-var spotsPath         = config.folders.flash.spots;
+var flashSpotsPath         = config.folders.flash.spots;
 var flashSpotsRemoteFolder = 'spots';
+
+var mp4SpotsPath         = config.folders.mp4.spots;
+var mp4SpotsRemoteFolder = 'mp4';
 
 var scriptsPath = config.folders.scripts;
 var scriptsRemoteFolder = 'scripts';
@@ -36,7 +39,9 @@ var app = express();
 var G_LASTREPLY = undefined;
 
 // pasta onde serao servidos os spots
-app.use('/' + flashSpotsRemoteFolder, express.static(__dirname + '/' + spotsPath));
+app.use('/' + flashSpotsRemoteFolder, express.static(__dirname + '/' + flashSpotsPath));
+
+app.use('/' + mp4SpotsRemoteFolder, express.static(__dirname + '/' + mp4SpotsPath));
 // pasta onde serao servidos os scripts
 app.use('/' + scriptsRemoteFolder, express.static(__dirname + '/' + scriptsPath));
 // pasta onde serao servidos os diferentes assets (css, images, etc)
@@ -69,7 +74,7 @@ app.get('/geral', function(req, res) {
 app.get('/xpto', function(req, res) {
     var request = require("request");
 
-    var input_path = './' + spotsPath + "/Fuel10seg.swf";
+    var input_path = './' + flashSpotsPath + "/Fuel10seg.swf";
     fs.stat(input_path, function(err, stats) {
         fs.createReadStream(input_path)
         .pipe(request.put("http://localhost:3000/xpti",
@@ -86,7 +91,7 @@ app.get('/xpto', function(req, res) {
 });
 
 app.put('/xpti', function(request, response){
-    var file = fs.createWriteStream('./' + spotsPath + "/received.txt");
+    var file = fs.createWriteStream('./' + flashSpotsPath + "/received.txt");
     logger.info("HEADERS: ", request.headers);
     var fileSize = request.headers['content-length'];
     var uploadedSize = 0;
@@ -152,37 +157,43 @@ app.get('/upload-spot', function(req, res) {
 // que devera ser utilizado no tratamento do request
 app.post('/ajax/upload-spot', express.bodyParser(), function(req, res) {
     logger.info(myutils.JSONstringify(req.files));
-    logger.info('Received spot: ' + req.files.userSpot.name);
+    var pathToPlace = './' + flashSpotsPath;
+    logger.info('Received spot: ' + req.files.userSpot.name + ' will place it on: ' + pathToPlace);
 
-    var newSpotName = myutils.getSpotName('./' + spotsPath,
+    var newSpotName = myutils.getSpotName(pathToPlace,
         req.files.userSpot.name,
         req.body.durationSpot,
         config.playlist.flash.suffix_pattern);
 
     logger.info('New spot name: ' + newSpotName);
 
-    var serverPathToMove = './' + spotsPath + '/' + newSpotName;
+    var serverPathToMove = './' + flashSpotsPath + '/' + newSpotName;
+    var remotePath       = '/' + flashSpotsRemoteFolder + '/' + req.files.userSpot.name;
+    var from             = req.files.userSpot.path;
 
-    var remotePath = '/' + flashSpotsRemoteFolder + '/' + req.files.userSpot.name;
+    logger.info('Moving ' + from + ' to ' + serverPathToMove);
 
-    logger.info('Moving ' + req.files.userSpot.path + ' to ' + serverPathToMove);
-
-    fs.rename(
-        req.files.userSpot.path,
-        serverPathToMove,
-        function(error) {
-            if(error) {
-                res.send({
-                    error: 'Ah crap! Something bad happened'
-                });
-                return;
-            }
-
+    errorFunction = function(error) {
+        if(error) {
+            console.log('ERROR MOVING!: ' + error);
             res.send({
-                path: remotePath,
-                filesystemPath: serverPathToMove
+                error: 'Ah crap! Something bad happened\n' + error
             });
-    });
+            return;
+        }
+
+        res.send({
+            path: remotePath,
+            filesystemPath: serverPathToMove
+        });
+    };
+
+    var mv = require('mv');
+    mv(from, serverPathToMove, errorFunction);
+    // fs.rename(
+    //     req.files.userSpot.path,
+    //     serverPathToMove,
+    //     errorFunction);
 });
 
 app.get('/ajax/get-info', function(req, res) {
@@ -210,7 +221,7 @@ app.get('/ajax/get-info', function(req, res) {
 app.get('/ajax/get-playlist', function(req, res) {
     logger.info('GET /ajax/get-playlist');
 
-    var files = fs.readdirSync('./' + spotsPath);
+    var files = fs.readdirSync('./' + flashSpotsPath);
 
     // var pattern = /\d+seg\.swf$/;
     var timeunit = config.playlist.timeunit;

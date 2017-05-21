@@ -16,6 +16,8 @@ Utils.prototype.JSONstringify = function (obj) {
 Utils.prototype.getSpotName = function (path, filename, duration, pattern) {
 
     var fs = require('fs');
+    var p  = require('path');
+
     var files = fs.readdirSync(path);
 
     var cont = 0;
@@ -27,9 +29,10 @@ Utils.prototype.getSpotName = function (path, filename, duration, pattern) {
     }
     var file_index = cont + 1;
 
-    filename = filename.replace(".swf", "");
+    extension = p.extname(filename); // '.swf'
+    filename = filename.replace(extension, "");
 
-    return file_index + "_" + filename + "_" + duration + "seg.swf";
+    return file_index + "_" + filename + "_" + duration + "seg" + extension;
 
     // files = files.sort();
 };
