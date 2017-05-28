@@ -1,4 +1,4 @@
-var DEBUG = true;
+var DEBUG = false;
 
 $.getJSON( "ajax/get-mp4-playlist", function(data) {
     if (data) {

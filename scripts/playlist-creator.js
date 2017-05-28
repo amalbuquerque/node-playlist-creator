@@ -1,4 +1,4 @@
-var DEBUG = true;
+var DEBUG = false;
 var playlistPlayedCounter = 0;
 // neste momento, faz reload da pagina no fim
 // de passar a playlist pela 10 vez
