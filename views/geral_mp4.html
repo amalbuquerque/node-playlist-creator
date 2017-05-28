@@ -4,8 +4,7 @@
         <script type="text/javascript" src="scripts/jquery-1.10.2.min.js"></script>
         <script type="text/javascript" src="scripts/jquery.tools-1.2.7.min.js"></script>
         <script type="text/javascript" src="scripts/prettyprint.js"></script>
-        <!-- <script type="text/javascript" src="scripts/utils.js"></script> -->
-        <!-- <script type="text/javascript" src="scripts/playlist-creator.js"></script> -->
+        <script type="text/javascript" src="scripts/utils.js"></script>
         <link href="assets/css/video-js.css" rel="stylesheet">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     </head>
@@ -21,102 +20,11 @@
             <div id="msg_header" class="msg msg_header">
                 <h3>Playlist received:</h3>
             </div>
-            <div id="sos_header" class="msg msg_header">
-                <h3>SOS (em caso de erro, copiar e colar noutra tab):  <a href=""></a></h3>
-            </div>
             <div id="message" class="msg">
             </div>
         </div>
         <script src="scripts/video.js"></script>
         <script src="scripts/videojs-playlist.js"></script>
-        <script type="text/javascript">
-            var player = videojs('my-video', { children: {loadSpinner: false} });
-
-            var orig_playlist = [{
-              sources: [{
-                src: 'http://localhost:3000/mp4/dog.mp4',
-                type: 'video/mp4',
-                duration: 4
-              }],
-              poster: 'assets/images/complete_white_488x414.png'
-            }, {
-              sources: [{
-                src: 'http://localhost:3000/mp4/fail.webm',
-                type: 'video/webm',
-                duration: 4,
-                poster: 'assets/images/complete_white_488x414.png'
-              }]
-            }, {
-              sources: [{
-                src: 'http://localhost:3000/mp4/fail2.webm',
-                type: 'video/webm',
-                duration: 4,
-                poster: 'assets/images/complete_white_488x414.png'
-              }]
-            }, {
-              sources: [{
-                src: 'http://localhost:3000/mp4/rubbit.webm',
-                type: 'video/webm',
-                duration: 4,
-                poster: 'assets/images/complete_white_488x414.png'
-              }]
-            }, {
-              sources: [{
-                src: 'http://localhost:3000/mp4/wut.mp4',
-                type: 'video/mp4',
-                duration: 4,
-                poster: 'assets/images/complete_white_488x414.png'
-              }]
-            }];
-
-            player.playlist(orig_playlist);
-
-            player.playlist.repeat(true);
-            player.playlist.autoadvance(0);
-
-            player.play();
-
-            player.on('ended', function() {
-                currentIndx = player.playlist.indexOf(this.currentSrc());
-                if ((currentIndx + 1) == this.playlist().length) {
-                  console.log('Ended playing the playlist with this: ', this.currentSrc());
-                }
-            });
-
-
-            var setTimeoutFor  = -1;
-            var spotsPlayed    = {};
-            var playlistPlayed = 0;
-            player.on('playlistitem', function() {
-                if(Object.keys(spotsPlayed).length == player.playlist().length) {
-                    // we already played all spots at least once
-                    playlistPlayed += 1;
-
-                    if(playlistPlayed >= 3) {
-                        location.reload();
-                    } else {
-                        spotsPlayed = {};
-                    }
-                }
-            });
-
-            player.on('playing', function () {
-                console.log('Now playing ', this.currentSrc());
-                var indexOf = player.playlist.currentItem();
-
-                spotsPlayed[indexOf] = this.currentSrc();
-                console.log('Playing ', (indexOf+1), ' of ', player.playlist().length);
-                duration = player.playlist()[indexOf].sources[0].duration;
-                if (setTimeoutFor != indexOf) {
-                    console.log('Will play this for ', duration, ' secs.')
-                    setTimeout(function() { player.playlist.next(); }, duration*1000);
-                    setTimeoutFor = indexOf;
-                }
-            });
-
-            // player.onPlayerReady = function() {
-                // player.play();
-            // }
-        </script>
+        <script src="scripts/mp4_webm_playlist.js"></script>
     </body>
 </html>

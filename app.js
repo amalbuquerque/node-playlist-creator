@@ -41,6 +41,8 @@ var G_LASTREPLY = undefined;
 
 // pasta onde serao servidos os spots
 app.use('/' + flashSpotsRemoteFolder, serveStatic(__dirname + '/' + flashSpotsPath));
+logger.info("Serving flash on:", '/' + flashSpotsRemoteFolder);
+logger.info("Local path for flash on:", __dirname + '/' + flashSpotsPath);
 
 var mp4RemotePath = '/' + mp4SpotsRemoteFolder;
 var mp4LocalPath = __dirname + '/' + mp4SpotsPath;
@@ -171,10 +173,11 @@ app.post('/ajax/upload-spot', express.bodyParser(), function(req, res) {
     var pathToPlace = './' + flashSpotsPath;
     logger.info('Received spot: ' + req.files.userSpot.name + ' will place it on: ' + pathToPlace);
 
+    extension = path.extname(req.files.userSpot.name)
     var newSpotName = myutils.getSpotName(pathToPlace,
         req.files.userSpot.name,
         req.body.durationSpot,
-        config.playlist.flash.suffix_pattern);
+        extension);
 
     logger.info('New spot name: ' + newSpotName);
 
@@ -201,10 +204,6 @@ app.post('/ajax/upload-spot', express.bodyParser(), function(req, res) {
 
     var mv = require('mv');
     mv(from, serverPathToMove, errorFunction);
-    // fs.rename(
-    //     req.files.userSpot.path,
-    //     serverPathToMove,
-    //     errorFunction);
 });
 
 app.get('/ajax/get-info', function(req, res) {
@@ -219,8 +218,6 @@ app.get('/ajax/get-info', function(req, res) {
         reply.message = "ONLINE, didn't create any playlist yet.";
     }
 
-    // var now = new Date();
-    // reply.timestamp = now.toString();
     reply.info_timestamp = myutils.getTimestamp();
 
     var toreturn = util.format( "%s ( %j )",
@@ -234,7 +231,6 @@ app.get('/ajax/get-playlist', function(req, res) {
 
     var files = fs.readdirSync('./' + flashSpotsPath);
 
-    // var pattern = /\d+seg\.swf$/;
     var timeunit = config.playlist.timeunit;
     var pattern = config.playlist.flash.pattern;
     var suffix = config.playlist.flash.suffix;
@@ -303,6 +299,70 @@ app.get('/ajax/get-playlist', function(req, res) {
     // 2013-11-05, AA: Para podermos devolver no get-info a ultima
     // resposta devolvida pelo playlist-creator
     G_LASTREPLY = reply;
+
+    res.json(reply);
+});
+
+
+app.get('/ajax/get-mp4-playlist', function(req, res) {
+    logger.info('GET /ajax/get-mp4-playlist');
+
+    var files = fs.readdirSync('./' + mp4SpotsPath);
+
+    var timeunit = config.playlist.timeunit;
+    var pattern = config.playlist.mp4.pattern;
+
+    var url_prefix = 'http://localhost:' + config.web.port + '/' + mp4SpotsRemoteFolder + '/';
+
+    var reply = {
+        spotsdir : mp4SpotsRemoteFolder,
+        timestamp : undefined,
+        outdoors : []
+    };
+    var outdoorIndex = 0;
+    for (var i in files) {
+        logger.debug('Checking file: ' + i + '; Name: ' + files[i]);
+
+        var extension = path.extname(files[i]);
+
+        var match = pattern.exec(files[i]);
+        if (match) {
+            var start = match.index;
+            var text = match[0];
+            var end = start + text.length;
+
+            logger.debug('Matched file:' + files[i] + '; start: '
+                + start + '; text:[' + text + ']; end: ' + end);
+
+            var duration = text.slice(0, - (timeunit.length + extension.length));
+
+            logger.debug('With duration: ' + duration);
+            reply.outdoors[outdoorIndex] = {
+                sources: [{
+                    src: url_prefix + files[i],
+                    type: 'video/mp4',
+                    duration: duration
+                }],
+                poster: 'assets/images/complete_white_488x414.png'
+            };
+
+            outdoorIndex++;
+        }
+        else {
+            logger.debug('Not a ' + pattern.toString());
+        }
+    }
+
+    var msg = 'MP4: Returning ' + reply.outdoors.length + ' mp4 outdoors!\n';
+    msg += 'Content: ' + myutils.JSONstringify(reply);
+
+    logger.info(msg);
+
+    reply.playlist_generated = myutils.getTimestamp();
+
+    // 2013-11-05, AA: Para podermos devolver no get-info a ultima
+    // resposta devolvida pelo playlist-creator
+    G_LAST_MP4_REPLY = reply;
 
     res.json(reply);
 });

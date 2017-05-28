@@ -20,6 +20,8 @@ Utils.prototype.getSpotName = function (path, filename, duration, pattern) {
 
     var files = fs.readdirSync(path);
 
+    pattern = new RegExp("\\" + pattern + "$");
+
     var cont = 0;
     for (var i in files) {
         var match = pattern.exec(files[i]);
@@ -29,12 +31,10 @@ Utils.prototype.getSpotName = function (path, filename, duration, pattern) {
     }
     var file_index = cont + 1;
 
-    extension = p.extname(filename); // '.swf'
+    extension = p.extname(filename);
     filename = filename.replace(extension, "");
 
     return file_index + "_" + filename + "_" + duration + "seg" + extension;
-
-    // files = files.sort();
 };
 
 module.exports = new Utils();
