@@ -41,12 +41,12 @@ var G_LASTREPLY = undefined;
 
 // pasta onde serao servidos os spots
 app.use('/' + flashSpotsRemoteFolder, serveStatic(__dirname + '/' + flashSpotsPath));
-logger.info("Serving flash on:", '/' + flashSpotsRemoteFolder);
+logger.info("Serving static flash on:", '/' + flashSpotsRemoteFolder);
 logger.info("Local path for flash on:", __dirname + '/' + flashSpotsPath);
 
 var mp4RemotePath = '/' + mp4SpotsRemoteFolder;
 var mp4LocalPath = __dirname + '/' + mp4SpotsPath;
-logger.info("Serving mp4 on:", mp4RemotePath);
+logger.info("Serving static mp4 on:", mp4RemotePath);
 logger.info("Local path for mp4 on:", mp4LocalPath);
 app.use(mp4RemotePath, serveStatic(mp4LocalPath));
 // app.use('/' + mp4SpotsRemoteFolder, express.static(__dirname + '/' + mp4SpotsPath));
@@ -74,10 +74,12 @@ app.get('/', function(req, res) {
     res.send("Hello world, I'm the ThatsIt Playlist Creator");
 });
 
+logger.info("Serving flash playlist on /geral");
 app.get('/geral', function(req, res) {
     res.render('geral.html');
 });
 
+logger.info("Serving mp4 playlist on /geral_mp4");
 app.get('/geral_mp4', function(req, res) {
     res.render('geral_mp4.html');
 });

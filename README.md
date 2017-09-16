@@ -15,7 +15,7 @@ TODO
   um fallback e enviar mail
 - Antes de colocar o 
 - Pôr o tamanho (H x L) dos filmes apresentados configuravel no .config e passado para a View
-- Pôr o player com .mp4 em vez dos .swf apenas
+- Pôr o player com .mp4 em vez dos .swf apenas ~~DONE
 - Pôr a informacao devolvida ao lado do spot em vez de estar em baixo~~ DONE
 - Pôr uma imagem como background para que seja apresentada entre reloads~~ DONE
 - Informar quantas vezes está a passar esta playlist e quando é que fará o reload~~ DONE

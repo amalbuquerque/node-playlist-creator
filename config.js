@@ -39,7 +39,7 @@ config.soshelper.flashTemplatePath = 'sos/flash_template.html';
 config.soshelper.resultPath = config.folders.flash.spots;
 config.soshelper.filename = 'sosresult.html';
 
-config.web.port = process.env.PORT || 3000;
+config.web.port = process.env.PORT || 3001;
 
 module.exports = config;
 
